@@ -1,0 +1,13 @@
+{
+  "$schema": "https://skills.ai/schema/skills.json",
+  "name": "skills-monorepo",
+  "version": "1.0.0",
+  "description": "A collection of AI skills for various tasks",
+  "skills": [
+    {
+      "name": "ai-startup-researcher",
+      "description": "收集、整理、归纳AI初创公司信息。当用户提到AI公司、初创企业、要求收集整理公司信息，或讨论某个AI公司时使用此skill。",
+      "path": "ai-startup-researcher"
+    }
+  ]
+}
