@@ -8,6 +8,11 @@
       "name": "ai-startup-researcher",
       "description": "收集、整理、归纳AI初创公司信息。当用户提到AI公司、初创企业、要求收集整理公司信息，或讨论某个AI公司时使用此skill。",
       "path": "ai-startup-researcher"
+    },
+    {
+      "name": "leetcode-teacher",
+      "description": "LeetCode 中等难度面试题逐步练习工具。当用户想练习算法题、刷 LeetCode、准备技术面试、或说来一道题、下一题、生成脚手架、开始练习时触发。支持按题目类型分类练习，为每道题生成带测试用例的 Python 脚手架，追踪学习进度 TODO。",
+      "path": "leetcode-teacher"
     }
   ]
 }
