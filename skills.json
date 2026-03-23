@@ -10,6 +10,11 @@
       "path": "ai-startup-researcher"
     },
     {
+      "name": "infographic",
+      "description": "绘制 Anthropic/Claude 官方文档风格的 SVG 信息图与架构流程图。当用户想画流程图、架构图、系统图、信息图，或将文字描述的系统/流程可视化为图表时使用此 skill。",
+      "path": "infographic"
+    },
+    {
       "name": "leetcode-teacher",
       "description": "LeetCode 中等难度面试题逐步练习工具。当用户想练习算法题、刷 LeetCode、准备技术面试、或说来一道题、下一题、生成脚手架、开始练习时触发。支持按题目类型分类练习，为每道题生成带测试用例的 Python 脚手架，追踪学习进度 TODO。",
       "path": "leetcode-teacher"
