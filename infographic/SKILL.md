@@ -28,6 +28,7 @@ description: |
 | **swimlane** | 泳道图：多个横向参与者各占一行，消息/箭头在泳道间流动；适合协议交互、多方协作 | `types/swimlane.md` |
 | **pattern-grid** | 模式对比网格：多列并排展示不同模式/方案，每列独立纵向流程，底部有文字说明 | `types/pattern-grid.md` |
 | **side-by-side** | 左右对比：两个方案/模式各占半幅，中间虚线分隔，适合"旧 vs 新"、"A 方案 vs B 方案" | `types/side-by-side.md` |
+| **nested-layer** | 水平分层嵌套架构：3–4 个横向大层（如"应用层 → 生产层 → 数据层"），每层内部有子区块嵌套，左侧可附管控面板 | `types/nested-layer.md` |
 
 **选择逻辑：**
 - 用户说"分层"、"阶段"、"流程" → `layered-flow`
@@ -35,6 +36,7 @@ description: |
 - 用户说"交互"、"协议"、"多方" → `swimlane`
 - 用户说"对比多种方案/模式" → `pattern-grid` 或 `side-by-side`
 - 只有两个方案对比 → `side-by-side`；三个及以上 → `pattern-grid`
+- 用户说"分层架构"且每层内有子模块嵌套、有上下层数据流 → `nested-layer`
 
 ## 第二步：选择视觉风格
 
