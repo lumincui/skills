@@ -5,9 +5,9 @@
   "description": "A collection of AI skills for various tasks",
   "skills": [
     {
-      "name": "ai-startup-researcher",
-      "description": "收集、整理、归纳AI初创公司信息。当用户提到AI公司、初创企业、要求收集整理公司信息，或讨论某个AI公司时使用此skill。",
-      "path": "ai-startup-researcher"
+      "name": "knowledge-graph",
+      "description": "将研究、讨论、探究的内容整理成系统性知识文档，或收集整理公司/产品调研信息。当用户要求总结知识、整理笔记、生成知识库文档、把讨论内容沉淀为结构化文档时使用此 skill。也适用于收集整理 AI 公司、初创企业、产品的调研信息。即使用户没有明确说"知识图谱"或"知识库"，只要涉及把散乱信息梳理成体系化文档的工作流，都应使用此 skill。",
+      "path": "knowledge-graph"
     },
     {
       "name": "infographic",
