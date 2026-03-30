@@ -3,36 +3,36 @@ name: opinion-miner
 description: Analyze community opinions from forums and comment sections. Scrapes comments from Bilibili, Reddit, or GitHub Issues, clusters them by semantic similarity, and extracts the core arguments, debates, and viewpoints. Produces a structured report showing what the community actually thinks — not just a summary of comments, but the underlying positions people hold and where the real disagreements are. Use this skill when the user wants to understand public opinion on a topic, find the main points of contention in a discussion, or do competitive/event research from community sources. Triggers include requests to "analyze comments", "what are people saying about X", "summarize the debate", "find the key arguments", "what's the community consensus", or any task involving opinion extraction from forum or comment data.
 ---
 
-# Opinion Miner
+# 舆情分析工具 (Opinion Miner)
 
-Analyze community comments to surface the core arguments and viewpoints people actually hold.
+分析社区评论，挖掘用户真正的核心观点和立场。
 
-## When to use this skill
+## 何时使用此技能
 
-Use this skill when the user wants to understand what a community thinks about a topic — not just "what they said" but "what positions they hold and where they disagree." The goal is to move from raw comments to structured insight.
+当用户想要了解社区对某个话题的看法时使用此技能——不仅仅是"他们说了什么"，而是"他们持有什么样的立场以及在哪里存在分歧"。目标是将原始评论转化为结构化的洞察。
 
-Typical triggers:
-- "What are people saying about X on Reddit/Bilibili/GitHub?"
-- "Analyze the comments on this post"
-- "What's the main point of disagreement here?"
-- "Help me understand the community's stance on this issue"
+典型触发场景：
+- "大家对 X 在 Reddit/Bilibili/GitHub 上怎么说？"
+- "分析一下这个帖子的评论"
+- "这里主要的分歧点是什么？"
+- "帮我了解一下社区对这个问题的态度"
 - "做一下这个话题的舆情分析"
 
-## Supported sources
+## 支持的数据来源
 
-| Source | Scraping method |
-|--------|----------------|
-| Bilibili video comments | `agent-browser` (requires JS rendering) or Bilibili API via `webfetch` |
-| Reddit threads | `webfetch` on `old.reddit.com` or Reddit JSON API (`/.json`) |
-| GitHub Issues (comments) | GitHub API via `webfetch` (`/repos/owner/repo/issues/N/comments`) |
+| 数据来源 | 爬取方式 |
+|---------|---------|
+| Bilibili 视频评论 | `agent-browser`（需要 JS 渲染）或通过 `webfetch` 调用 Bilibili API |
+| Reddit 帖子 | 通过 `webfetch` 访问 `old.reddit.com` 或 Reddit JSON API (`/.json`) |
+| GitHub Issues 评论 | 通过 `webfetch` 调用 GitHub API (`/repos/owner/repo/issues/N/comments`) |
 
-If the user provides a URL, identify the source platform and use the appropriate method.
+如果用户提供了 URL，先识别平台类型，然后使用相应的方法进行爬取。
 
-## Workflow
+## 工作流程
 
-### Step 1: Scrape comments
+### 步骤 1: 爬取评论
 
-Collect all comments from the given URL. Save raw data to `comments_raw.json` with this structure:
+从给定的 URL 收集所有评论。将原始数据保存到 `comments_raw.json`，使用以下结构：
 
 ```json
 [
@@ -47,51 +47,51 @@ Collect all comments from the given URL. Save raw data to `comments_raw.json` wi
 ]
 ```
 
-**Platform-specific scraping:**
+**平台特定的爬取方式：**
 
-**Bilibili:** Try the comment API first — `https://api.bilibili.com/x/v2/reply/main?type=1&oid={video_id}&mode=3&ps=20&pn={page}`. Paginate until comments are exhausted. If API fails, fall back to `agent-browser`:
+**Bilibili：** 先尝试评论 API — `https://api.bilibili.com/x/v2/reply/main?type=1&oid={video_id}&mode=3&ps=20&pn={page}`。分页爬取直到评论耗尽。如果 API 失败，回退到 `agent-browser`：
 ```
 agent-browser open "https://www.bilibili.com/video/BVxxxxx" && agent-browser wait --load networkidle
 agent-browser snapshot -i
 ```
-Then scroll and extract comments via DOM snapshots.
+然后滚动页面并通过 DOM 快照提取评论。
 
-**Reddit:** Use JSON API — append `.json` to any Reddit URL:
+**Reddit：** 使用 JSON API — 在任意 Reddit URL 末尾添加 `.json`：
 ```
 webfetch "https://www.reddit.com/r/subreddit/comments/postid.json?limit=500"
 ```
-Parse the nested tree structure. Include replies as nested comments but flatten for clustering (replies often restate the parent argument).
+解析嵌套的树状结构。将回复作为嵌套评论包含在内，但在聚类时将其展平（回复通常会重复父评论的观点）。
 
-**GitHub Issues:** Use the GitHub API:
+**GitHub Issues：** 使用 GitHub API：
 ```
 webfetch "https://api.github.com/repos/owner/repo/issues/issue_number/comments?per_page=100"
 ```
-Paginate with `&page=N`. Also fetch the issue body — it frames the debate.
+使用 `&page=N` 进行分页。同时获取 issue 正文——它定义了讨论的背景。
 
-### Step 2: Preprocess
+### 步骤 2: 预处理
 
-Clean the raw comments before analysis:
-1. Remove bot comments, spam, and empty/meaningless comments (e.g. "+1", "bump", single emoji)
-2. If over 500 comments, sample strategically — take top-voted comments + a random sample of mid-tier to capture minority viewpoints
-3. Keep metadata (likes, author) — it helps gauge which viewpoints are popular
+在分析之前清理原始评论：
+1. 移除机器人评论、垃圾信息以及无意义评论（如 "+1"、"bump"、单个表情）
+2. 如果评论超过 500 条，战略性采样——选取高赞评论 + 随机抽取中热度评论，以捕捉少数派观点
+3. 保留元数据（点赞数、作者）——有助于判断哪些观点更受欢迎
 
-Save cleaned data to `comments_cleaned.json`.
+将清理后的数据保存到 `comments_cleaned.json`。
 
-### Step 3: Semantic clustering
+### 步骤 3: 语义聚类
 
-Read all cleaned comments and group them by semantic similarity — comments that express the same underlying argument go in the same cluster, even if they use very different wording.
+阅读所有清理后的评论，按语义相似性进行分组——表达相同底层论点的评论归为一组，即使措辞完全不同。
 
-**How to cluster effectively:**
-- Read comments in batches (50-100 at a time) and do a first-pass grouping
-- Merge batches by comparing clusters across passes — same argument = same cluster
-- Each cluster should represent a distinct **position** or **argument**, not just a topic
-- Name each cluster with a concise statement of its core argument (not a topic label)
+**高效聚类的方法：**
+- 批量阅读评论（每次 50-100 条）并进行第一轮分组
+- 通过对比各批次之间的聚类结果进行合并——相同论点 = 同一聚类
+- 每个聚类应该代表一个独特的**立场**或**论点**，而不仅仅是主题
+- 用简洁的论点陈述来命名每个聚类（而不是主题标签）
 
-**Cluster naming convention:** Each cluster name should be a claim, not a topic.
-- Good: "This feature breaks backward compatibility and should be opt-in"
-- Bad: "Backward compatibility concerns"
+**聚类命名规范：** 每个聚类名称应该是一个论点，而不是主题。
+- 好的例子："此功能破坏向后兼容性，应该改为可选"
+- 不好的例子："向后兼容性担忧"
 
-Save clustering results to `clusters.json`:
+将聚类结果保存到 `clusters.json`：
 
 ```json
 [
@@ -106,23 +106,23 @@ Save clustering results to `clusters.json`:
 ]
 ```
 
-### Step 4: Debate analysis
+### 步骤 4: 辩论分析
 
-For each cluster, determine:
-1. **Position**: What exactly is this group arguing?
-2. **Evidence**: What facts, experiences, or logic do they cite?
-3. **Strength of conviction**: Are they assertive or tentative? Use language cues and like counts.
-4. **Relationship to other clusters**: Is this an opposing view to another cluster? A nuance or extension?
+针对每个聚类，确定以下内容：
+1. **立场**：这个群体到底在争论什么？
+2. **论据**：他们引用了什么事实、经验或逻辑？
+3. **信念强度**：他们是肯定的还是犹豫的？利用语言线索和点赞数进行判断
+4. **与其他聚类的关系**：这是对另一个聚类的反对观点吗？还是补充或延伸？
 
-Then synthesize across clusters to identify:
-- **Core debate axis**: The fundamental disagreement (e.g., "security vs. convenience", "innovation vs. stability")
-- **Consensus points**: Things most clusters agree on
-- **Polarizing points**: Where the community is sharply divided
-- **Minority viewpoints**: Positions held by few but with strong reasoning
+然后综合所有聚类进行识别：
+- **核心争论轴**：根本性的分歧（如"安全 vs. 便利"、"创新 vs. 稳定"）
+- **共识点**：大多数聚类都同意的点
+- **分歧点**：社区存在明显对立的点
+- **少数派观点**：持有者少但论据有力的观点
 
-### Step 5: Generate report
+### 步骤 5: 生成报告
 
-Output a Markdown report using this template:
+使用以下模板输出 Markdown 报告：
 
 ```markdown
 # [Topic] 社区观点分析
@@ -167,12 +167,12 @@ Output a Markdown report using this template:
 - **情绪变化趋势**: [如有时间线数据]
 ```
 
-If the user requests JSON output as well, also save the structured data.
+如果用户也请求 JSON 输出，请同时保存结构化数据。
 
-## Tips for better analysis
+## 分析技巧
 
-- Don't just count votes — a highly-upvoted minority opinion may matter more than a low-engagement majority position
-- Pay attention to **how** people argue, not just what they say. Sarcasm, emotional language, and defensiveness signal strong positions
-- Look for **implicit** arguments — sometimes the real disagreement is unstated (e.g., people arguing about implementation details may actually disagree about priorities)
-- Cross-reference with replies — a reply that heavily disagrees with a parent comment reveals the debate structure
-- If comments are in multiple languages, cluster by argument regardless of language, then note language distribution in each cluster
+- 不要只数投票数——高赞的少数派观点可能比低参与度的多数派立场更重要
+- 注意人们**如何**争论，而不仅仅是他们说了什么。讽刺、情绪化语言和防御性表态都表明强烈的立场
+- 寻找**隐含的**论点——有时真正的分歧并未明确说出（例如，人们争论实现细节实际上可能是在争论优先级）
+- 与回复交叉参考——一个强烈反对父评论的回复揭示了辩论结构
+- 如果评论涉及多种语言，按论点进行聚类（不考虑语言），然后在每个聚类中注明语言分布
