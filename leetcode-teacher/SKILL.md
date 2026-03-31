@@ -28,14 +28,36 @@ description: >
 
 当今日完成题数**达到 3 道**时，自动执行以下操作：
 1. 告知用户"今日三题目标已完成！"
-2. 搜索 Todoist 中今天到期的 LeetCode 相关任务，找到后自动标记为完成：
+2. **提交并推送代码**：将今日所有新增的脚手架文件和更新后的 `README.md` 提交到 git 仓库并推送：
    ```bash
-   # 查找今日 LeetCode 任务
-   td task list --due today --json
-   # 找到包含 "leetcode" 或 "lc" 或 "算法" 或 "刷题" 的任务后完成它
-   td task complete "<任务名或id>"
+   # 检查当前 git 状态
+   git status
+   # 添加所有变更（新的脚手架文件和 README.md）
+   git add .
+   # 提交，commit message 格式：chore: complete daily 3 LeetCode problems (日期)
+   git commit -m "chore: complete daily 3 LeetCode problems ($(date +%Y-%m-%d))"
+   # 推送到远程
+   git push
    ```
-3. 如果找不到匹配任务，告知用户未找到今日 Todoist LeetCode 任务，可手动标记。
+   如果当前目录不是 git 仓库（`git status` 报错），跳过此步骤并告知用户。
+3. 搜索 Todoist 中今天到期的 LeetCode 相关任务，找到后：
+   a. 先获取 commit 的 GitHub 链接：
+      ```bash
+      # 获取刚推送的 commit hash
+      git rev-parse HEAD
+      # 获取远程仓库 URL（用于拼接 commit 链接）
+      git remote get-url origin
+      ```
+      将远程 URL 转换为 GitHub commit 链接，格式为 `https://github.com/<user>/<repo>/commit/<hash>`（若 URL 是 SSH 格式 `git@github.com:user/repo.git`，需转换为 HTTPS）。如果不是 GitHub 仓库，直接使用 commit hash。
+   b. 添加评论到该任务，内容为 commit 链接：
+      ```bash
+      td comment add "<任务id>" "今日三题已完成 🎉 commit: <commit_url>"
+      ```
+   c. 标记任务为完成：
+      ```bash
+      td task complete "<任务名或id>"
+      ```
+4. 如果找不到匹配任务，告知用户未找到今日 Todoist LeetCode 任务，可手动标记。
 
 搜索任务时，匹配标准（大小写不敏感）：任务内容包含 `leetcode`、`lc`、`算法`、`刷题` 其中任一关键词。如有多个匹配任务，列出让用户选择。
 
