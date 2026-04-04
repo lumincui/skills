@@ -4,7 +4,7 @@ description: >
   LeetCode 中等难度面试题逐步练习工具。当用户想练习算法题、刷 LeetCode、准备技术面试、或说"来一道题"、"下一题"、"生成脚手架"、"开始练习"时触发。
   支持按题目类型（DP、链表、树、图、滑动窗口、双指针、哈希表、二分、栈、堆、回溯、区间、字符串、并查集）分类练习，
   为每道题生成带测试用例的 Python 脚手架，通过 Markdown 表格追踪学习进度，引导用户独立思考后再提供题解。
-  支持每日三题目标，完成三道题后自动将 Todoist 中的"LeetCode 练习"任务标记为完成。
+  支持每日三题目标，通过 git diff README.md 统计进度并提交 Git。
 ---
 
 # LeetCode 逐步练习 Skill
@@ -47,11 +47,16 @@ description: >
 
 详细格式 → 阅读 `references/progress_tracking.md`
 
-### 3. 每日三题目标与 Todoist 联动
+### 3. 每日三题目标
 
-统计今天已完成的题数。达到 3 道时：
+统计今日已完成题数：
+```bash
+python3 /Users/lumin/skills/leetcode-teacher/scripts/count_today_problems.py
+```
+
+达到 3 道时：
 1. 告知用户"今日三题目标已完成！"
-2. **执行 Git 提交推送**：
+2. **Git 提交推送**：
    ```bash
    source /Users/lumin/skills/leetcode-teacher/scripts/git_ops.sh
    git_daily_commit
