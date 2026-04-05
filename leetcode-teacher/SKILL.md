@@ -51,19 +51,19 @@ description: >
 
 统计今日已完成题数：
 ```bash
-python3 /Users/lumin/skills/leetcode-teacher/scripts/count_today_problems.py
+python3 scripts/count_today_problems.py
 ```
 
 达到 3 道时：
 1. 告知用户"今日三题目标已完成！"
 2. **Git 提交推送**：
    ```bash
-   source /Users/lumin/skills/leetcode-teacher/scripts/git_ops.sh
+   source scripts/git_ops.sh
    git_daily_commit
    ```
 3. **更新 Todoist**：
    ```bash
-   source /Users/lumin/skills/leetcode-teacher/scripts/todoist_ops.sh
+   source scripts/todoist_ops.sh
    commit_url=$(get_commit_url)
    task_id=$(find_today_leetcode_tasks | awk '{print $1}')
    complete_leetcode_task "$task_id" "$commit_url"
@@ -132,13 +132,13 @@ python3 /Users/lumin/skills/leetcode-teacher/scripts/count_today_problems.py
 
 1. **Git 提交推送**：
    ```bash
-   source /Users/lumin/skills/leetcode-teacher/scripts/git_ops.sh
+   source scripts/git_ops.sh
    git_add_commit_push "chore: complete LeetCode session ($(date +%Y-%m-%d))"
    ```
 
 2. **更新 Todoist**：
    ```bash
-   source /Users/lumin/skills/leetcode-teacher/scripts/todoist_ops.sh
+   source scripts/todoist_ops.sh
    commit_url=$(get_commit_url)
    task_id=$(find_today_leetcode_tasks | awk '{print $1}')
    complete_leetcode_task "$task_id" "$commit_url"
