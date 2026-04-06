@@ -4,7 +4,7 @@
 
 # Find today's LeetCode tasks (keywords: leetcode, lc, 算法, 刷题)
 find_today_leetcode_tasks() {
-    td list | grep -E "leetcode|lc|算法|刷题" | grep -E "$(date +%Y-%m-%d)|今天|今日" || echo "No matching tasks found"
+    td today | grep -E "leetcode|lc|算法|刷题" || echo "No matching tasks found"
 }
 
 # Add comment to task and mark complete
