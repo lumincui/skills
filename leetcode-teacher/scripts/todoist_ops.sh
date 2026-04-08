@@ -2,9 +2,49 @@
 # Todoist operations for LeetCode practice
 # Requires: td CLI tool (Todoist CLI)
 
-# Find today's LeetCode tasks (keywords: leetcode, lc, 算法, 刷题)
-find_today_leetcode_tasks() {
-    td today | grep -E "leetcode|lc|算法|刷题" || echo "No matching tasks found"
+find_leetcode_tasks() {
+    td task list --all --json 2>/dev/null | python3 -c "
+import sys, json, re
+from datetime import datetime, timedelta
+
+keywords = ['leetcode', '刷题']
+pattern = '|'.join(keywords)
+case_insensitive = re.compile(pattern, re.IGNORECASE)
+
+tomorrow = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
+
+try:
+    data = json.load(sys.stdin)
+    results = data.get('results', [])
+    if not results:
+        print('No tasks found')
+        sys.exit(0)
+    
+    found = False
+    for task in results:
+        content = task.get('content', '')
+        if case_insensitive.search(content):
+            due = task.get('due')
+            due_str = due.get('date', '') if due else ''
+            due_date = due_str.split('T')[0] if due_str else ''
+            
+            if due_date and due_date >= tomorrow:
+                continue
+            
+            is_recurring = '🔄' if due and due.get('isRecurring') else ''
+            status = '⚠️ OVERDUE' if due_date and due_date < tomorrow else ''
+            print(f\"{task['id']} | {due_date} {is_recurring} {status} | {content}\")
+            found = True
+    
+    if not found:
+        print('No matching tasks found')
+except json.JSONDecodeError:
+    print('Error: Failed to parse Todoist response')
+    sys.exit(1)
+except Exception as e:
+    print(f'Error: {e}')
+    sys.exit(1)
+"
 }
 
 # Add comment to task and mark complete
