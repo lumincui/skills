@@ -91,7 +91,14 @@ description: >
 
 ### 3. 每日目标
 
-从 `.leetcode.json` 读取 `daily_goal`，用 `scripts/count_today_problems.py` 统计今日完成数。达到目标时：
+通过 `python3 scripts/count_today_problems.py` 获取状态（JSON格式），包含：
+- `completed`：今日完成数
+- `daily_goal`：每日目标
+- `remaining`：剩余题目数
+- `goal_reached`：是否达标
+- `next_step`：建议操作（initialize / start / continue / done）
+
+达到目标时：
 1. 告知用户目标达成
 2. 建议 Git 提交（`source scripts/git_ops.sh && git_daily_commit`）
 3. 若 `todoist_enabled: true`，更新 Todoist（`source scripts/todoist_ops.sh`）

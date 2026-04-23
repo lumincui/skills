@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
-统计今日完成的 LeetCode 题目数量
+获取 LeetCode 今日状态和建议下一步
 用法: python3 count_today_problems.py
-返回: 今日完成题目数量
+返回: JSON 格式状态和建议
 """
 
 import os
@@ -27,6 +27,7 @@ def load_config():
 
 
 def count_today_problems():
+    """统计今日完成的题目数量"""
     today = datetime.now().strftime("%Y-%m-%d")
 
     if not os.path.exists(README_PATH):
@@ -49,17 +50,38 @@ def count_today_problems():
     return count
 
 
-def check_daily_goal():
-    """检查是否达到每日目标"""
+def get_status():
+    """获取当前状态和建议下一步"""
     config = load_config()
     daily_goal = config.get("daily_goal", 3)
     completed = count_today_problems()
-    return completed >= daily_goal, completed, daily_goal
+    remaining = max(0, daily_goal - completed)
+
+    status = {
+        "completed": completed,
+        "daily_goal": daily_goal,
+        "remaining": remaining,
+        "goal_reached": completed >= daily_goal,
+        "initialized": config.get("initialized", False),
+        "mode": config.get("mode", "normal"),
+        "todoist_enabled": config.get("todoist_enabled", False),
+    }
+
+    if completed == 0 and not config.get("initialized", False):
+        status["next_step"] = "initialize"
+    elif completed >= daily_goal:
+        status["next_step"] = "done"
+    elif completed > 0:
+        status["next_step"] = "continue"
+    else:
+        status["next_step"] = "start"
+
+    return status
 
 
 def main():
-    count = count_today_problems()
-    print(count)
+    status = get_status()
+    print(json.dumps(status, ensure_ascii=False, indent=2))
 
 
 if __name__ == "__main__":
