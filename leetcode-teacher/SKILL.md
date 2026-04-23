@@ -91,7 +91,7 @@ description: >
 
 ### 3. 每日目标
 
-通过 `python3 scripts/count_today_problems.py` 获取状态（JSON格式），包含：
+通过 `python3 scripts/get_status.py` 获取状态（JSON格式），包含：
 - `completed`：今日完成数
 - `daily_goal`：每日目标
 - `remaining`：剩余题目数

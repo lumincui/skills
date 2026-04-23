@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 获取 LeetCode 今日状态和建议下一步
-用法: python3 count_today_problems.py
+用法: python3 get_status.py
 返回: JSON 格式状态和建议
 """
 
