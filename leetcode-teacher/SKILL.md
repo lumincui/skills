@@ -24,7 +24,10 @@ description: >
   "todoist_enabled": true,
   "daily_goal": 3,
   "mode": "normal",
-  "initialized": true
+  "initialized": true,
+  "problems": [
+    {"id": "322", "name": "Coin Change", "category": "dp", "status": "pass", "date": "2024-01-15"}
+  ]
 }
 ```
 
@@ -41,7 +44,7 @@ description: >
    - 普通模式：自动生成脚手架
    - 快速模式：对话引导，不生成代码
 
-初始化完成后，将配置写入 `.leetcode.json`，并告知用户配置已保存。
+初始化完成后，**检查并迁移 Markdown**：若存在 `README.md` 且包含进度表格，解析表格并将题目数据同步到 `.leetcode.json` 的 `problems` 数组。然后告知用户配置已保存，包含迁移的题目数量。
 
 ### 配置读取
 

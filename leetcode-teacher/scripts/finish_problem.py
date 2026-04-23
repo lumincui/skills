@@ -161,6 +161,40 @@ def git_commit(num, name, category, status):
         return False
 
 
+def update_problems_json(num, name, category, status_input, completed_date):
+    """更新 .leetcode.json 中的 problems 数组"""
+    config = load_config()
+    problems = config.get("problems", [])
+
+    status = "pass" if status_input == "pass" else "review"
+
+    idx = -1
+    for i, p in enumerate(problems):
+        if p.get("id") == num:
+            idx = i
+            break
+
+    problem_entry = {
+        "id": num,
+        "name": name,
+        "category": category,
+        "status": status,
+        "date": completed_date,
+    }
+
+    if idx >= 0:
+        problems[idx] = problem_entry
+    else:
+        problems.append(problem_entry)
+
+    config["problems"] = problems
+
+    with open(CONFIG_PATH, "w") as f:
+        json.dump(config, f, ensure_ascii=False, indent=2)
+
+    print(f"✅ .leetcode.json: 更新 {num} {name}")
+
+
 def main():
     if len(sys.argv) < 5:
         print("❌ 用法: python3 finish_problem.py <题号> <题目名> <类型> <状态>")
@@ -183,6 +217,7 @@ def main():
     print()
 
     update_readme(num, name, category, status, completed_date)
+    update_problems_json(num, name, category, status_input, completed_date)
     complete_todoist_task()
     git_commit(num, name, category, status)
 
