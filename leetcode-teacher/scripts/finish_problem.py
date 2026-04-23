@@ -15,7 +15,8 @@ import json
 from datetime import date
 
 README_PATH = "README.md"
-TODOIST_PROJECT = "Inbox"  # 固定的 Todoist 项目名
+CONFIG_PATH = ".leetcode.json"
+TODOIST_PROJECT = "Inbox"
 
 STATUS_MAP = {
     "pass": "✅ 通过",
@@ -25,6 +26,19 @@ STATUS_MAP = {
 TABLE_HEADER = """| 题号 | 题目名 | 类型 | 状态 | 完成日期 |
 |------|--------|------|------|----------|
 """
+
+
+def load_config():
+    """从 .leetcode.json 读取配置"""
+    if os.path.exists(CONFIG_PATH):
+        with open(CONFIG_PATH, "r") as f:
+            return json.load(f)
+    return {
+        "daily_goal": 3,
+        "todoist_enabled": False,
+        "mode": "normal",
+        "initialized": False,
+    }
 
 
 def parse_table(content):
@@ -87,6 +101,10 @@ def update_readme(num, name, category, status, completed_date):
 
 
 def complete_todoist_task():
+    config = load_config()
+    if not config.get("todoist_enabled", False):
+        return False
+
     try:
         result = subprocess.run(
             ["td", "task", "list", "--project", TODOIST_PROJECT, "--json"],

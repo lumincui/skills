@@ -2,6 +2,16 @@
 # Todoist operations for LeetCode practice
 # Requires: td CLI tool (Todoist CLI)
 
+CONFIG_PATH=".leetcode.json"
+
+get_todoist_enabled() {
+    if [ -f "$CONFIG_PATH" ]; then
+        python3 -c "import json; print(json.load(open('$CONFIG_PATH')).get('todoist_enabled', False))" 2>/dev/null || echo "false"
+    else
+        echo "false"
+    fi
+}
+
 find_leetcode_tasks() {
     td task list --all --json 2>/dev/null | python3 -c "
 import sys, json, re
@@ -52,6 +62,11 @@ except Exception as e:
 complete_leetcode_task() {
     local task_id="$1"
     local commit_url="$2"
+    
+    enabled=$(get_todoist_enabled)
+    if [ "$enabled" != "True" ] && [ "$enabled" != "true" ]; then
+        return 0
+    fi
     
     if [ -n "$task_id" ]; then
         td comment add "$task_id" "LeetCode练习完成！$commit_url"

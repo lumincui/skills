@@ -4,7 +4,8 @@ description: >
   LeetCode 中等难度面试题逐步练习工具。当用户想练习算法题、刷 LeetCode、准备技术面试、或说"来一道题"、"下一题"、"生成脚手架"、"开始练习"时触发。
   支持按题目类型（DP、链表、树、图、滑动窗口、双指针、哈希表、二分、栈、堆、回溯、区间、字符串、并查集）分类练习，
   为每道题生成带测试用例的 Python 脚手架，通过 Markdown 表格追踪学习进度，引导用户独立思考后再提供题解。
-  支持每日三题目标，通过 git diff README.md 统计进度并提交 Git。
+  支持可配置的每日目标、Todoist 集成（可选），通过 git diff README.md 统计进度并提交 Git。
+  首次使用时会询问用户配置（是否使用 Todoist、每日目标、默认模式）并存入 .leetcode.json。
 ---
 
 # LeetCode 逐步练习 Skill
@@ -12,6 +13,39 @@ description: >
 帮助用户系统刷 LeetCode 中等难度题，核心学习循环是：**出题 → 生成脚手架 → 用户独立作答 → 验证 → 复盘讲解**。
 
 这个 skill 的设计理念是：让用户在实践中学习，通过独立思考而非被动接受来建立真正的问题解决能力。
+
+## 初始化与配置
+
+### 配置文件
+
+使用 `.leetcode.json` 保存用户配置和题目状态：
+```json
+{
+  "todoist_enabled": true,
+  "daily_goal": 3,
+  "mode": "normal",
+  "initialized": true
+}
+```
+
+### 初始化流程
+
+**首次使用时**：若 `.leetcode.json` 不存在，通过 `question` 工具询问用户以下配置：
+
+1. **todoist_enabled**：是否使用 Todoist 集成？
+   - 选项：是 / 否
+
+2. **daily_goal**：每日目标题目数（默认 3）
+
+3. **mode**：默认交互模式
+   - 普通模式：自动生成脚手架
+   - 快速模式：对话引导，不生成代码
+
+初始化完成后，将配置写入 `.leetcode.json`，并告知用户配置已保存。
+
+### 配置读取
+
+所有决策点（每日目标判断、Todoist 更新等）均从 `.leetcode.json` 读取配置，不再使用硬编码默认值。
 
 ## 交互模式
 
@@ -55,14 +89,12 @@ description: >
 
 **原理**：新会话开始时读取这些信息，帮助理解用户当前的学习状态和意图。格式参考 `references/progress_tracking.md`。
 
-### 3. 每日三题目标
+### 3. 每日目标
 
-**目标**：将大目标拆解为每日可完成的小目标，通过习惯建立持续学习的动力。
-
-用 `scripts/count_today_problems.py` 统计今日完成数。达到 3 道时：
+从 `.leetcode.json` 读取 `daily_goal`，用 `scripts/count_today_problems.py` 统计今日完成数。达到目标时：
 1. 告知用户目标达成
-2. 建议 Git 提交（`source scripts/git_ops.sh && git_daily_commit`）—— 保持进度可追溯
-3. 可选更新 Todoist（`source scripts/todoist_ops.sh`）—— 与任务管理集成
+2. 建议 Git 提交（`source scripts/git_ops.sh && git_daily_commit`）
+3. 若 `todoist_enabled: true`，更新 Todoist（`source scripts/todoist_ops.sh`）
 
 **原理**：完成不是终点，commit 让进步沉淀，Todoist 更新保持外部系统的同步。
 
@@ -113,8 +145,8 @@ description: >
 3. 审计核心实现：读取源码分析逻辑是否正确，效率是否达标，论证是否为最优实现（如不是需指出差距）
 4. 反馈：根据情况标记状态，不替用户写代码
 5. **判断后续流程**：
-   - 未达到每日 3 题目标 → 不询问，直接出下一题
-   - 已达到每日 3 题目标 → 自动执行收工序列，不询问
+    - 未达到每日目标 → 不询问，直接出下一题
+    - 已达到每日目标 → 自动执行收工序列，不询问
 
 **原理**：诊断而非修改能保持用户的学习主体性。除非用户明确要求"帮我改"，否则只指出问题位置和方向。自动衔接下一题减少不必要的停顿，保持学习节奏。
 
