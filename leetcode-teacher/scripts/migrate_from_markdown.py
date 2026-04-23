@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-从 README.md 迁移题目数据到 .leetcode.json
+从 README.md 迁移题目数据到 .lc-state.json
 用法: python3 migrate_from_markdown.py
 """
 
@@ -10,7 +10,7 @@ import re
 from datetime import datetime
 
 README_PATH = "README.md"
-CONFIG_PATH = ".leetcode.json"
+CONFIG_PATH = ".lc-state.json"
 
 
 def parse_readme_problems():

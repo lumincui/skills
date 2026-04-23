@@ -10,11 +10,11 @@ import json
 from datetime import datetime
 
 README_PATH = "README.md"
-CONFIG_PATH = ".leetcode.json"
+CONFIG_PATH = ".lc-state.json"
 
 
 def load_config():
-    """从 .leetcode.json 读取配置"""
+    """从 .lc-state.json 读取配置"""
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, "r") as f:
             return json.load(f)
