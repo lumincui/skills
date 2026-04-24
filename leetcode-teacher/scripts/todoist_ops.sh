@@ -2,7 +2,7 @@
 # Todoist operations for LeetCode practice
 # Requires: td CLI tool (Todoist CLI)
 
-CONFIG_PATH=".lc-state.json"
+CONFIG_PATH="leetcode.json"
 
 get_todoist_enabled() {
     if [ -f "$CONFIG_PATH" ]; then

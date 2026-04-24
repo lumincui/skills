@@ -15,7 +15,7 @@ import json
 from datetime import date
 
 README_PATH = "README.md"
-CONFIG_PATH = ".lc-state.json"
+CONFIG_PATH = "leetcode.json"
 TODOIST_PROJECT = "Inbox"
 
 STATUS_MAP = {
@@ -29,7 +29,7 @@ TABLE_HEADER = """| 题号 | 题目名 | 类型 | 状态 | 完成日期 |
 
 
 def load_config():
-    """从 .lc-state.json 读取配置"""
+    """从 leetcode.json 读取配置"""
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, "r") as f:
             return json.load(f)
@@ -162,7 +162,7 @@ def git_commit(num, name, category, status):
 
 
 def update_problems_json(num, name, category, status_input, completed_date):
-    """更新 .lc-state.json 中的 problems 数组"""
+    """更新 leetcode.json 中的 problems 数组"""
     config = load_config()
     problems = config.get("problems", [])
 
@@ -192,7 +192,7 @@ def update_problems_json(num, name, category, status_input, completed_date):
     with open(CONFIG_PATH, "w") as f:
         json.dump(config, f, ensure_ascii=False, indent=2)
 
-    print(f"✅ .lc-state.json: 更新 {num} {name}")
+    print(f"✅ leetcode.json: 更新 {num} {name}")
 
 
 def main():

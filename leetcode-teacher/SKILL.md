@@ -5,7 +5,7 @@ description: >
   支持按题目类型（DP、链表、树、图、滑动窗口、双指针、哈希表、二分、栈、堆、回溯、区间、字符串、并查集）分类练习，
   为每道题生成带测试用例的 Python 脚手架，通过 Markdown 表格追踪学习进度，引导用户独立思考后再提供题解。
   支持可配置的每日目标、Todoist 集成（可选），通过 git diff README.md 统计进度并提交 Git。
-  首次使用时会询问用户配置（是否使用 Todoist、每日目标、默认模式）并存入 .lc-state.json。
+  首次使用时会询问用户配置（是否使用 Todoist、每日目标、默认模式）并存入 leetcode.json。
 ---
 
 # LeetCode 逐步练习 Skill
@@ -18,7 +18,7 @@ description: >
 
 ### 配置文件
 
-使用 `.lc-state.json` 保存用户配置和题目状态：
+使用 `leetcode.json` 保存用户配置和题目状态：
 ```json
 {
   "todoist_enabled": true,
@@ -33,22 +33,25 @@ description: >
 
 ### 初始化流程
 
-**首次使用时**：若 `.lc-state.json` 不存在，通过 `question` 工具询问用户以下配置：
+**首次使用时**：若 `leetcode.json` 不存在，通过 `question` 工具依次询问用户：
 
 1. **todoist_enabled**：是否使用 Todoist 集成？
+   - 问题："是否启用 Todoist 集成？（用于自动更新每日任务状态）"
    - 选项：是 / 否
 
-2. **daily_goal**：每日目标题目数（默认 3）
+2. **daily_goal**：每日目标题目数？
+   - 问题："每日目标做几道题目？"
+   - 输入：数字（范围 1-10，默认 3）
 
-3. **mode**：默认交互模式
-   - 普通模式：自动生成脚手架
-   - 快速模式：对话引导，不生成代码
+3. **mode**：默认交互模式？
+   - 问题："默认使用哪种模式？"
+   - 选项：普通模式（生成脚手架）/ 快速模式（对话引导）
 
-初始化完成后，**检查并迁移 Markdown**：若存在 `README.md` 且包含进度表格，解析表格并将题目数据同步到 `.lc-state.json` 的 `problems` 数组。然后告知用户配置已保存，包含迁移的题目数量。
+初始化完成后，**检查并迁移 Markdown**：若存在 `README.md` 且包含进度表格，解析表格并将题目数据同步到 `leetcode.json` 的 `problems` 数组。然后告知用户配置已保存，包含迁移的题目数量。
 
 ### 配置读取
 
-所有决策点（每日目标判断、Todoist 更新等）均从 `.lc-state.json` 读取配置，不再使用硬编码默认值。
+所有决策点（每日目标判断、Todoist 更新等）均从 `leetcode.json` 读取配置，不再使用硬编码默认值。
 
 ## 交互模式
 

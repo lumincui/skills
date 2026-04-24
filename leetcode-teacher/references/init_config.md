@@ -1,8 +1,8 @@
 # 初始化配置参考
 
-本文档描述首次使用 leetcode-teacher 时的初始化流程和配置格式。
+本 skill 会在当前目录创建 `leetcode.json` 保存用户配置和题目状态。
 
-## .lc-state.json 配置格式
+## leetcode.json 配置格式
 
 ```json
 {
@@ -41,7 +41,7 @@
 
 ### 触发条件
 
-当 `.lc-state.json` 文件不存在时，触发初始化流程。
+当 `leetcode.json` 文件不存在时，触发初始化流程。
 
 ### 询问内容
 
@@ -63,7 +63,7 @@
 
 ### Markdown 迁移
 
-若存在 `README.md` 且包含进度表格（格式参考 `references/progress_tracking.md`），解析表格内容并将题目数据迁移到 `.lc-state.json` 的 `problems` 数组。
+若存在 `README.md` 且包含进度表格（格式参考 `references/progress_tracking.md`），解析表格内容并将题目数据迁移到 `leetcode.json` 的 `problems` 数组。
 
 迁移规则：
 - 读取 `| 题号 | 题目名 | 类型 | 状态 | 完成日期 |` 格式的表格
@@ -72,17 +72,17 @@
 
 ### 配置保存
 
-初始化完成后，将配置写入 `.lc-state.json`，格式见上方。
+初始化完成后，将配置写入 `leetcode.json`，格式见上方。
 
 ## 配置读取
 
-所有脚本和决策点应从 `.lc-state.json` 读取配置：
+所有脚本和决策点应从 `leetcode.json` 读取配置：
 
 ```python
 import json
 
 def load_config():
-    with open('.lc-state.json', 'r') as f:
+    with open('leetcode.json', 'r') as f:
         return json.load(f)
 
 config = load_config()
