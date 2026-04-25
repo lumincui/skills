@@ -8,47 +8,53 @@
 
 import sys
 import os
+import json
 
-README_PATH = "README.md"
+CONFIG_PATH = ".leetcode.json"
+LEETCODE_JSON = "leetcode.json"
 
 
-def parse_readme():
-    if not os.path.exists(README_PATH):
+def load_json():
+    if not os.path.exists(LEETCODE_JSON):
         return {}
-    with open(README_PATH, "r") as f:
-        content = f.read()
-    result = {}
-    lines = content.strip().split("\n")
-    for line in lines[2:]:
-        if line.strip().startswith("|") and "------" not in line:
-            parts = [p.strip() for p in line.split("|")[1:-1]]
-            if len(parts) >= 4 and parts[0].isdigit():
-                result[parts[0]] = {
-                    "name": parts[1],
-                    "cat": parts[2],
-                    "status": parts[3],
-                    "date": parts[4] if len(parts) > 4 else "",
-                }
-    return result
+    with open(LEETCODE_JSON, "r") as f:
+        return json.load(f)
+
+
+def get_progress():
+    data = load_json()
+    return data.get("progress", {})
+
+
+def get_problems():
+    data = load_json()
+    problems = data.get("problems", [])
+    return {p["id"]: p for p in problems}
 
 
 def show_stats(category=None):
-    progress = parse_readme()
+    progress = get_progress()
+    problems = get_problems()
 
     if not progress:
         print("📊 暂无进度记录")
-        print("   使用 update_progress.py 添加题目")
         return
 
-    total = len(progress)
-    passed = sum(1 for p in progress.values() if "通过" in p["status"])
-    review = sum(1 for p in progress.values() if "需复习" in p["status"])
+    total = len(problems)
+    passed = sum(1 for p in progress.values() if p.get("status") == "pass")
+    review = sum(1 for p in progress.values() if p.get("status") == "need_review")
 
     if category:
-        filtered = {k: v for k, v in progress.items() if v["cat"] == category}
+        filtered = {
+            pid: info
+            for pid, info in progress.items()
+            if problems.get(pid, {}).get("category") == category
+        }
         cat_total = len(filtered)
-        cat_passed = sum(1 for p in filtered.values() if "通过" in p["status"])
-        cat_review = sum(1 for p in filtered.values() if "需复习" in p["status"])
+        cat_passed = sum(1 for p in filtered.values() if p.get("status") == "pass")
+        cat_review = sum(
+            1 for p in filtered.values() if p.get("status") == "need_review"
+        )
         print(f"\n📊 {category} 类型统计")
         print(f"   总题目数: {cat_total}")
         if cat_total > 0:
@@ -57,27 +63,28 @@ def show_stats(category=None):
             print(f"   需复习: {cat_review}")
         if filtered:
             print("\n   题目列表:")
-            for num, info in sorted(filtered.items(), key=lambda x: int(x[0])):
-                emoji = "✅" if "通过" in info["status"] else "🔄"
-                print(f"     {emoji} {num}. {info['name']}")
+            for pid in sorted(filtered.keys(), key=lambda x: int(x)):
+                info = filtered[pid]
+                prob_info = problems.get(pid, {})
+                emoji = "✅" if info.get("status") == "pass" else "🔄"
+                print(f"     {emoji} {pid}. {prob_info.get('name', 'Unknown')}")
     else:
         print(f"\n📊 LeetCode 刷题进度")
-        print(f"   总题目数: {total}")
-        if total > 0:
-            pct = passed * 100 // total
-            print(f"   已通过: {passed} ({pct}%)  ✅")
-            print(f"   需复习: {review}  🔄")
-            print(f"   未开始: {total - passed - review}")
+        print(f"   总题目数: {len(problems)}")
+        print(f"   已完成: {passed} ({passed * 100 // total if total > 0 else 0}%)  ✅")
+        print(f"   需复习: {review}  🔄")
+        print(f"   未开始: {total - passed - review}")
 
         by_cat = {}
-        for info in progress.values():
-            cat = info["cat"]
+        for pid, info in progress.items():
+            prob_info = problems.get(pid, {})
+            cat = prob_info.get("category", "unknown")
             if cat not in by_cat:
                 by_cat[cat] = {"total": 0, "pass": 0, "review": 0}
             by_cat[cat]["total"] += 1
-            if "通过" in info["status"]:
+            if info.get("status") == "pass":
                 by_cat[cat]["pass"] += 1
-            if "需复习" in info["status"]:
+            if info.get("status") == "need_review":
                 by_cat[cat]["review"] += 1
 
         print("\n   按类型统计:")

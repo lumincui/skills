@@ -3,9 +3,9 @@
 完成一道 LeetCode 题目：更新进度、关闭 Todoist 任务、提交 git
 用法: python3 finish_problem.py <题号> <题目名> <类型> <状态>
 示例: python3 finish_problem.py 322 "Coin Change" dp pass
-示例: python3 finish_problem.py 322 "Coin Change" dp review
+示例: python3 finish_problem.py 322 "Coin Change" dp need_review
 
-状态: pass (通过) / review (需复习)
+状态: pass (通过) / need_review (需复习)
 """
 
 import sys
@@ -14,26 +14,37 @@ import subprocess
 import json
 from datetime import date
 
-README_PATH = "README.md"
-CONFIG_PATH = "leetcode.json"
+CONFIG_PATH = ".leetcode.json"
+LEETCODE_JSON = "leetcode.json"
 TODOIST_PROJECT = "Inbox"
 
 STATUS_MAP = {
     "pass": "✅ 通过",
-    "review": "🔄 需复习",
+    "need_review": "🔄 需复习",
 }
 
-TABLE_HEADER = """| 题号 | 题目名 | 类型 | 状态 | 完成日期 |
-|------|--------|------|------|----------|
-"""
+
+def load_json():
+    """从 leetcode.json 读取数据"""
+    if os.path.exists(LEETCODE_JSON):
+        with open(LEETCODE_JSON, "r") as f:
+            return json.load(f)
+    return {"problems": [], "progress": {}, "study_plan": {}}
+
+
+def save_json(data):
+    """保存到 leetcode.json"""
+    with open(LEETCODE_JSON, "w") as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
 
 
 def load_config():
-    """从 leetcode.json 读取配置"""
+    """从 .leetcode.json 读取配置"""
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, "r") as f:
             return json.load(f)
     return {
+        "difficulty": "medium",
         "daily_goal": 3,
         "todoist_enabled": False,
         "mode": "normal",
@@ -41,63 +52,24 @@ def load_config():
     }
 
 
-def parse_table(content):
-    lines = content.strip().split("\n")
-    problems = []
-    for line in lines[2:]:
-        if line.strip().startswith("|") and "------" not in line:
-            parts = [p.strip() for p in line.split("|")[1:-1]]
-            if len(parts) >= 4 and parts[0].isdigit():
-                problems.append(parts)
-    return problems
+def update_progress_json(num, name, category, status_input, completed_date):
+    """更新 leetcode.json 中的 progress"""
+    data = load_json()
+    progress = data.get("progress", {})
 
+    status = "pass" if status_input == "pass" else "need_review"
 
-def format_table(problems):
-    lines = [TABLE_HEADER.strip()]
-    for p in problems:
-        lines.append(f"| {p[0]} | {p[1]} | {p[2]} | {p[3]} | {p[4]} |")
-    return "\n".join(lines)
+    progress[num] = {
+        "status": status,
+        "date": completed_date,
+        "name": name,
+        "category": category,
+    }
 
+    data["progress"] = progress
+    save_json(data)
 
-def update_readme(num, name, category, status, completed_date):
-    if os.path.exists(README_PATH):
-        with open(README_PATH, "r") as f:
-            content = f.read()
-        problems = parse_table(content) if "题号" in content else []
-    else:
-        content = ""
-        problems = []
-
-    idx = -1
-    for i, p in enumerate(problems):
-        if p[0] == num:
-            idx = i
-            break
-
-    if idx >= 0:
-        problems[idx] = [num, name, category, status, completed_date]
-        action = "更新"
-    else:
-        problems.append([num, name, category, status, completed_date])
-        problems.sort(key=lambda x: int(x[0]))
-        action = "添加"
-
-    new_content = format_table(problems)
-
-    if content:
-        header_end = content.find("| 题号 |")
-        if header_end > 0:
-            new_content = content[:header_end] + new_content
-        else:
-            new_content = f"# LeetCode 刷题进度\n\n{new_content}\n"
-    else:
-        new_content = f"# LeetCode 刷题进度\n\n{new_content}\n"
-
-    with open(README_PATH, "w") as f:
-        f.write(new_content)
-
-    print(f"✅ README: {action} {num} {name} [{status}]")
-    return True
+    print(f"✅ leetcode.json: 更新 {num} {name} [{status}]")
 
 
 def complete_todoist_task():
@@ -161,44 +133,10 @@ def git_commit(num, name, category, status):
         return False
 
 
-def update_problems_json(num, name, category, status_input, completed_date):
-    """更新 leetcode.json 中的 problems 数组"""
-    config = load_config()
-    problems = config.get("problems", [])
-
-    status = "pass" if status_input == "pass" else "review"
-
-    idx = -1
-    for i, p in enumerate(problems):
-        if p.get("id") == num:
-            idx = i
-            break
-
-    problem_entry = {
-        "id": num,
-        "name": name,
-        "category": category,
-        "status": status,
-        "date": completed_date,
-    }
-
-    if idx >= 0:
-        problems[idx] = problem_entry
-    else:
-        problems.append(problem_entry)
-
-    config["problems"] = problems
-
-    with open(CONFIG_PATH, "w") as f:
-        json.dump(config, f, ensure_ascii=False, indent=2)
-
-    print(f"✅ leetcode.json: 更新 {num} {name}")
-
-
 def main():
     if len(sys.argv) < 5:
         print("❌ 用法: python3 finish_problem.py <题号> <题目名> <类型> <状态>")
-        print("   状态: pass (通过) / review (需复习)")
+        print("   状态: pass (通过) / need_review (需复习)")
         sys.exit(1)
 
     num = sys.argv[1]
@@ -209,15 +147,14 @@ def main():
     completed_date = str(date.today())
 
     if status_input not in STATUS_MAP:
-        print(f"❌ 未知状态: {status_input}，使用 pass 或 review")
+        print(f"❌ 未知状态: {status_input}，使用 pass 或 need_review")
         sys.exit(1)
 
     print(f"\n🎉 完成题目: {num}. {name}")
     print(f"   类型: {category} | 状态: {status}")
     print()
 
-    update_readme(num, name, category, status, completed_date)
-    update_problems_json(num, name, category, status_input, completed_date)
+    update_progress_json(num, name, category, status_input, completed_date)
     complete_todoist_task()
     git_commit(num, name, category, status)
 

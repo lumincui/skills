@@ -9,16 +9,25 @@ import os
 import json
 from datetime import datetime
 
-README_PATH = "README.md"
-CONFIG_PATH = "leetcode.json"
+CONFIG_PATH = ".leetcode.json"
+LEETCODE_JSON = "leetcode.json"
+
+
+def load_json():
+    """从 leetcode.json 读取题目和进度"""
+    if os.path.exists(LEETCODE_JSON):
+        with open(LEETCODE_JSON, "r") as f:
+            return json.load(f)
+    return {"problems": [], "progress": {}, "study_plan": {}}
 
 
 def load_config():
-    """从 leetcode.json 读取配置"""
+    """从 .leetcode.json 读取配置"""
     if os.path.exists(CONFIG_PATH):
         with open(CONFIG_PATH, "r") as f:
             return json.load(f)
     return {
+        "difficulty": "medium",
         "daily_goal": 3,
         "todoist_enabled": False,
         "mode": "normal",
@@ -29,23 +38,13 @@ def load_config():
 def count_today_problems():
     """统计今日完成的题目数量"""
     today = datetime.now().strftime("%Y-%m-%d")
-
-    if not os.path.exists(README_PATH):
-        return 0
-
-    with open(README_PATH, "r") as f:
-        content = f.read()
+    data = load_json()
+    progress = data.get("progress", {})
 
     count = 0
-    lines = content.strip().split("\n")
-    for line in lines[2:]:
-        if line.strip().startswith("|") and "------" not in line:
-            parts = [p.strip() for p in line.split("|")[1:-1]]
-            if len(parts) >= 5 and parts[0].isdigit():
-                date = parts[4]
-                if date == today:
-                    if "通过" in parts[3] or "需复习" in parts[3]:
-                        count += 1
+    for prob_id, info in progress.items():
+        if info.get("date") == today:
+            count += 1
 
     return count
 
@@ -64,6 +63,7 @@ def get_status():
         "goal_reached": completed >= daily_goal,
         "initialized": config.get("initialized", False),
         "mode": config.get("mode", "normal"),
+        "difficulty": config.get("difficulty", "medium"),
         "todoist_enabled": config.get("todoist_enabled", False),
     }
 
