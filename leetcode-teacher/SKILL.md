@@ -4,7 +4,7 @@ description: >
   LeetCode 中等难度面试题逐步练习工具。当用户想练习算法题、刷 LeetCode、准备技术面试、或说"来一道题"、"下一题"、"生成脚手架"、"开始练习"时触发。
   支持按题目类型（DP、链表、树、图、滑动窗口、双指针、哈希表、二分、栈、堆、回溯、区间、字符串、并查集）和难度（medium/high）分类练习，
   为每道题生成带测试用例的 Python 脚手架，通过 JSON 文件追踪学习进度，引导用户独立思考后再提供题解。
-  支持可配置的每日目标、Todoist 集成（可选），通过 git diff leetcode.json 统计进度并提交 Git。
+  支持可配置的每日目标，通过 git diff leetcode.json 统计进度并提交 Git。
   首次使用时会询问用户配置（难度、每日目标、模式）并存入 leetcode.json。
 ---
 
@@ -22,13 +22,12 @@ description: >
 ```json
 {
   "difficulty": "medium",
-  "todoist_enabled": true,
   "daily_goal": 3,
   "mode": "normal",
   "initialized": true,
   "problems": [...],
   "progress": {},
-  "study_plan": {...}
+  "study_plan": {}
 }
 ```
 
@@ -40,11 +39,7 @@ description: >
    - 问题："想练习什么难度的题目？"
    - 选项：简单 / 中等（默认）/ 困难
 
-2. **todoist_enabled**：是否使用 Todoist 集成？
-   - 问题："是否启用 Todoist 集成？（用于自动更新每日任务状态）"
-   - 选项：是 / 否
-
-3. **daily_goal**：每日目标题目数？
+2. **daily_goal**：每日目标题目数？
    - 问题："每日目标做几道题目？"
    - 输入：数字（范围 1-10，默认 3）
 
@@ -56,7 +51,7 @@ description: >
 
 ### 配置读取
 
-所有决策点（每日目标判断、Todoist 更新等）均从 `leetcode.json` 读取配置，不再使用硬编码默认值。
+所有决策点（每日目标判断等）均从 `leetcode.json` 读取配置，不再使用硬编码默认值。
 
 ## 交互模式
 
@@ -112,9 +107,8 @@ description: >
 达到目标时：
 1. 告知用户目标达成
 2. 建议 Git 提交（`source scripts/git_ops.sh && git_daily_commit`）
-3. 若 `todoist_enabled: true`，更新 Todoist（`source scripts/todoist_ops.sh`）
 
-**原理**：完成不是终点，commit 让进步沉淀，Todoist 更新保持外部系统的同步。
+**原理**：完成不是终点，commit 让进步沉淀。
 
 ### 4. 出题策略
 
@@ -195,10 +189,9 @@ description: >
 
 当用户说"收工"、"完成"、"结束了"时：
 1. Git 提交推送（`source scripts/git_ops.sh && git_add_commit_push`）
-2. 可选 Todoist 更新
-3. 检查学习计划
+2. 检查学习计划
 
-**原理**：收工不是必须，但 commit 能让进度有据可查，Todoist 更新保持任务系统的准确性。
+**原理**：收工不是必须，但 commit 能让进度有据可查。
 
 ## 题目类型参考
 

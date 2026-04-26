@@ -9,7 +9,6 @@
 ```json
 {
   "difficulty": "medium",
-  "todoist_enabled": false,
   "daily_goal": 3,
   "mode": "normal",
   "initialized": true,
@@ -24,7 +23,6 @@
 | 字段 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
 | `difficulty` | string | `"medium"` | 难度偏好：`easy` / `medium` / `hard` |
-| `todoist_enabled` | boolean | `false` | 是否启用 Todoist 集成 |
 | `daily_goal` | number | `3` | 每日目标题目数 |
 | `mode` | string | `"normal"` | 默认模式：`normal` 或 `fast` |
 | `initialized` | boolean | `false` | 是否已完成初始化 |
@@ -65,12 +63,7 @@ key 为题号，value 包含：
    - 选项：简单 / 中等 / 困难
    - 默认：中等
 
-2. **是否使用 Todoist**
-   - 问题：是否启用 Todoist 集成？（用于自动更新任务状态）
-   - 选项：是 / 否
-   - 默认：否
-
-3. **每日目标**
+2. **每日目标**
    - 问题：每日目标做几道题目？
    - 输入：数字（默认 3）
 
@@ -95,7 +88,6 @@ def load_json():
 data = load_json()
 difficulty = data.get('difficulty', 'medium')
 daily_goal = data.get('daily_goal', 3)
-todoist_enabled = data.get('todoist_enabled', False)
 mode = data.get('mode', 'normal')
 progress = data.get('progress', {})
 problems = data.get('problems', [])
@@ -107,7 +99,6 @@ problems = data.get('problems', [])
 
 支持的修改项：
 - `set difficulty <easy/medium/hard>` → 更新 leetcode.json 中的 difficulty
-- `set todoist on/off` → 更新 leetcode.json 中的 todoist_enabled
 - `set daily goal <N>` → 更新 leetcode.json 中的 daily_goal
 - `set mode <normal/fast>` → 更新 leetcode.json 中的 mode
 

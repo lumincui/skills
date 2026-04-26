@@ -1,6 +1,5 @@
 {
   "difficulty": "medium",
-  "todoist_enabled": false,
   "daily_goal": 3,
   "mode": "normal",
   "initialized": false,

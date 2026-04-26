@@ -19,7 +19,6 @@ def load_json():
             return json.load(f)
     return {
         "difficulty": "medium",
-        "todoist_enabled": False,
         "daily_goal": 3,
         "mode": "normal",
         "initialized": False,
@@ -58,7 +57,6 @@ def get_status():
         "initialized": data.get("initialized", False),
         "mode": data.get("mode", "normal"),
         "difficulty": data.get("difficulty", "medium"),
-        "todoist_enabled": data.get("todoist_enabled", False),
     }
 
     if completed == 0 and not data.get("initialized", False):

@@ -41,7 +41,7 @@ def parse_readme_problems():
                 status_raw = parts[3]
                 date_str = parts[4]
 
-                status = "pass" if "通过" in status_raw else "review"
+                status = "pass" if "通过" in status_raw else "need_review"
 
                 if re.match(r"\d{4}-\d{2}-\d{2}", date_str):
                     problems.append(
@@ -63,11 +63,13 @@ def load_config():
         with open(CONFIG_PATH, "r") as f:
             return json.load(f)
     return {
-        "todoist_enabled": False,
+        "difficulty": "medium",
         "daily_goal": 3,
         "mode": "normal",
         "initialized": False,
         "problems": [],
+        "progress": {},
+        "study_plan": {},
     }
 
 
@@ -88,7 +90,7 @@ def migrate():
     config = load_config()
 
     existing_ids = {p["id"] for p in config.get("problems", [])}
-    new_problems = [p for p in problems if p["id"] not in existing_ids]
+    new_problems = [p for p in problems if p["id"] not in existing_ids}
 
     if "problems" not in config:
         config["problems"] = []
