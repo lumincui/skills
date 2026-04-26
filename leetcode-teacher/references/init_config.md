@@ -2,13 +2,9 @@
 
 本文档描述首次使用 leetcode-teacher 时的初始化流程和配置格式。
 
-## 配置文件说明
+## 配置文件
 
-使用两个配置文件：
-- `.leetcode.json`：用户配置
-- `leetcode.json`：题目列表和进度追踪
-
-## .leetcode.json 配置格式
+使用 `leetcode.json` 保存所有配置和进度：
 
 ```json
 {
@@ -16,7 +12,10 @@
   "todoist_enabled": false,
   "daily_goal": 3,
   "mode": "normal",
-  "initialized": true
+  "initialized": true,
+  "problems": [...],
+  "progress": {},
+  "study_plan": {}
 }
 ```
 
@@ -29,24 +28,9 @@
 | `daily_goal` | number | `3` | 每日目标题目数 |
 | `mode` | string | `"normal"` | 默认模式：`normal` 或 `fast` |
 | `initialized` | boolean | `false` | 是否已完成初始化 |
-
-## leetcode.json 格式
-
-```json
-{
-  "problems": [
-    {"id": "322", "name": "Coin Change", "category": "dp", "priority": "high", "core_pattern": "完全背包"}
-  ],
-  "progress": {
-    "322": {"status": "pass", "date": "2024-01-15"}
-  },
-  "study_plan": {
-    "to_review": [],
-    "today": [],
-    "knowledge_notes": []
-  }
-}
-```
+| `problems` | array | `[]` | 题目列表 |
+| `progress` | object | `{}` | 进度记录 |
+| `study_plan` | object | `{}` | 学习计划 |
 
 ### problems 数组元素
 
@@ -70,7 +54,7 @@ key 为题号，value 包含：
 
 ### 触发条件
 
-当 `.leetcode.json` 文件不存在时，触发初始化流程。
+当 `leetcode.json` 文件不存在时，触发初始化流程。
 
 ### 询问内容
 
@@ -97,34 +81,22 @@ key 为题号，value 包含：
 
 ### 配置保存
 
-初始化完成后，将配置写入 `.leetcode.json`。
+初始化完成后，将配置写入 `leetcode.json`。
 
 ## 配置读取
-
-用户配置从 `.leetcode.json` 读取：
 
 ```python
 import json
 
-def load_config():
-    with open('.leetcode.json', 'r') as f:
-        return json.load(f)
-
-config = load_config()
-difficulty = config.get('difficulty', 'medium')
-daily_goal = config.get('daily_goal', 3)
-todoist_enabled = config.get('todoist_enabled', False)
-mode = config.get('mode', 'normal')
-```
-
-进度从 `leetcode.json` 读取：
-
-```python
 def load_json():
     with open('leetcode.json', 'r') as f:
         return json.load(f)
 
 data = load_json()
+difficulty = data.get('difficulty', 'medium')
+daily_goal = data.get('daily_goal', 3)
+todoist_enabled = data.get('todoist_enabled', False)
+mode = data.get('mode', 'normal')
 progress = data.get('progress', {})
 problems = data.get('problems', [])
 ```
@@ -134,9 +106,9 @@ problems = data.get('problems', [])
 用户可以通过说"修改配置"或"更新设置"来修改配置。
 
 支持的修改项：
-- `set difficulty <easy/medium/hard>` → 更新 .leetcode.json 中的 difficulty
-- `set todoist on/off` → 更新 .leetcode.json 中的 todoist_enabled
-- `set daily goal <N>` → 更新 .leetcode.json 中的 daily_goal
-- `set mode <normal/fast>` → 更新 .leetcode.json 中的 mode
+- `set difficulty <easy/medium/hard>` → 更新 leetcode.json 中的 difficulty
+- `set todoist on/off` → 更新 leetcode.json 中的 todoist_enabled
+- `set daily goal <N>` → 更新 leetcode.json 中的 daily_goal
+- `set mode <normal/fast>` → 更新 leetcode.json 中的 mode
 
 题目完成时，更新 `leetcode.json` 中的 `progress` 对象。

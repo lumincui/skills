@@ -9,29 +9,23 @@ import os
 import json
 from datetime import datetime
 
-CONFIG_PATH = ".leetcode.json"
 LEETCODE_JSON = "leetcode.json"
 
 
 def load_json():
-    """从 leetcode.json 读取题目和进度"""
+    """从 leetcode.json 读取全部数据"""
     if os.path.exists(LEETCODE_JSON):
         with open(LEETCODE_JSON, "r") as f:
             return json.load(f)
-    return {"problems": [], "progress": {}, "study_plan": {}}
-
-
-def load_config():
-    """从 .leetcode.json 读取配置"""
-    if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, "r") as f:
-            return json.load(f)
     return {
         "difficulty": "medium",
-        "daily_goal": 3,
         "todoist_enabled": False,
+        "daily_goal": 3,
         "mode": "normal",
         "initialized": False,
+        "problems": [],
+        "progress": {},
+        "study_plan": {},
     }
 
 
@@ -51,8 +45,8 @@ def count_today_problems():
 
 def get_status():
     """获取当前状态和建议下一步"""
-    config = load_config()
-    daily_goal = config.get("daily_goal", 3)
+    data = load_json()
+    daily_goal = data.get("daily_goal", 3)
     completed = count_today_problems()
     remaining = max(0, daily_goal - completed)
 
@@ -61,13 +55,13 @@ def get_status():
         "daily_goal": daily_goal,
         "remaining": remaining,
         "goal_reached": completed >= daily_goal,
-        "initialized": config.get("initialized", False),
-        "mode": config.get("mode", "normal"),
-        "difficulty": config.get("difficulty", "medium"),
-        "todoist_enabled": config.get("todoist_enabled", False),
+        "initialized": data.get("initialized", False),
+        "mode": data.get("mode", "normal"),
+        "difficulty": data.get("difficulty", "medium"),
+        "todoist_enabled": data.get("todoist_enabled", False),
     }
 
-    if completed == 0 and not config.get("initialized", False):
+    if completed == 0 and not data.get("initialized", False):
         status["next_step"] = "initialize"
     elif completed >= daily_goal:
         status["next_step"] = "done"

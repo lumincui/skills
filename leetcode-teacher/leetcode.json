@@ -1,4 +1,9 @@
 {
+  "difficulty": "medium",
+  "todoist_enabled": false,
+  "daily_goal": 3,
+  "mode": "normal",
+  "initialized": false,
   "problems": [
     {"id": "322", "name": "Coin Change", "category": "dp", "priority": "high", "core_pattern": "完全背包"},
     {"id": "300", "name": "Longest Increasing Subsequence", "category": "dp", "priority": "high", "core_pattern": "LIS"},

@@ -14,7 +14,6 @@ import subprocess
 import json
 from datetime import date
 
-CONFIG_PATH = ".leetcode.json"
 LEETCODE_JSON = "leetcode.json"
 TODOIST_PROJECT = "Inbox"
 
@@ -25,31 +24,26 @@ STATUS_MAP = {
 
 
 def load_json():
-    """从 leetcode.json 读取数据"""
+    """从 leetcode.json 读取全部数据"""
     if os.path.exists(LEETCODE_JSON):
         with open(LEETCODE_JSON, "r") as f:
             return json.load(f)
-    return {"problems": [], "progress": {}, "study_plan": {}}
+    return {
+        "difficulty": "medium",
+        "todoist_enabled": False,
+        "daily_goal": 3,
+        "mode": "normal",
+        "initialized": False,
+        "problems": [],
+        "progress": {},
+        "study_plan": {},
+    }
 
 
 def save_json(data):
     """保存到 leetcode.json"""
     with open(LEETCODE_JSON, "w") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
-
-
-def load_config():
-    """从 .leetcode.json 读取配置"""
-    if os.path.exists(CONFIG_PATH):
-        with open(CONFIG_PATH, "r") as f:
-            return json.load(f)
-    return {
-        "difficulty": "medium",
-        "daily_goal": 3,
-        "todoist_enabled": False,
-        "mode": "normal",
-        "initialized": False,
-    }
 
 
 def update_progress_json(num, name, category, status_input, completed_date):
@@ -73,8 +67,8 @@ def update_progress_json(num, name, category, status_input, completed_date):
 
 
 def complete_todoist_task():
-    config = load_config()
-    if not config.get("todoist_enabled", False):
+    data = load_json()
+    if not data.get("todoist_enabled", False):
         return False
 
     try:
@@ -88,8 +82,8 @@ def complete_todoist_task():
             print(f"⚠️ Todoist: 无法获取项目列表")
             return False
 
-        data = json.loads(result.stdout)
-        tasks = data.get("results", [])
+        result_data = json.loads(result.stdout)
+        tasks = result_data.get("results", [])
         for task in tasks:
             content = task.get("content", "")
             if "leetcode" in content.lower():

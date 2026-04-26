@@ -10,7 +10,6 @@ import sys
 import os
 import json
 
-CONFIG_PATH = ".leetcode.json"
 LEETCODE_JSON = "leetcode.json"
 
 

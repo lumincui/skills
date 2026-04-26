@@ -5,7 +5,7 @@ description: >
   支持按题目类型（DP、链表、树、图、滑动窗口、双指针、哈希表、二分、栈、堆、回溯、区间、字符串、并查集）和难度（medium/high）分类练习，
   为每道题生成带测试用例的 Python 脚手架，通过 JSON 文件追踪学习进度，引导用户独立思考后再提供题解。
   支持可配置的每日目标、Todoist 集成（可选），通过 git diff leetcode.json 统计进度并提交 Git。
-  首次使用时会询问用户配置（难度、每日目标、模式）并存入 .leetcode.json。
+  首次使用时会询问用户配置（难度、每日目标、模式）并存入 leetcode.json。
 ---
 
 # LeetCode 逐步练习 Skill
@@ -18,41 +18,23 @@ description: >
 
 ### 配置文件
 
-使用两个配置文件：
-- `.leetcode.json`：用户配置
-- `leetcode.json`：题目列表和进度追踪
-
-`.leetcode.json` 格式：
+使用 `leetcode.json` 保存所有配置和进度：
 ```json
 {
   "difficulty": "medium",
   "todoist_enabled": true,
   "daily_goal": 3,
   "mode": "normal",
-  "initialized": true
-}
-```
-
-`leetcode.json` 格式：
-```json
-{
-  "problems": [
-    {"id": "322", "name": "Coin Change", "category": "dp", "priority": "high", "core_pattern": "完全背包"}
-  ],
-  "progress": {
-    "322": {"status": "pass", "date": "2024-01-15"}
-  },
-  "study_plan": {
-    "to_review": [],
-    "today": [],
-    "knowledge_notes": []
-  }
+  "initialized": true,
+  "problems": [...],
+  "progress": {},
+  "study_plan": {...}
 }
 ```
 
 ### 初始化流程
 
-**首次使用时**：若 `.leetcode.json` 不存在，通过 `question` 工具依次询问用户：
+**首次使用时**：若 `leetcode.json` 不存在，通过 `question` 工具依次询问用户：
 
 1. **difficulty**：难度偏好
    - 问题："想练习什么难度的题目？"
@@ -74,7 +56,7 @@ description: >
 
 ### 配置读取
 
-所有决策点（每日目标判断、Todoist 更新等）均从 `.leetcode.json` 读取配置，不再使用硬编码默认值。
+所有决策点（每日目标判断、Todoist 更新等）均从 `leetcode.json` 读取配置，不再使用硬编码默认值。
 
 ## 交互模式
 
