@@ -10,7 +10,9 @@
   "progress": {
     "题号": {
       "status": "pass",
-      "date": "2024-01-15"
+      "date": "2024-01-15",
+      "name": "Coin Change",
+      "category": "dp"
     }
   },
   "study_plan": {
@@ -27,6 +29,29 @@
 |------|------|------|
 | `status` | string | `pass`（独立完成）或 `need_review`（需复习） |
 | `date` | string | 完成日期 YYYY-MM-DD |
+| `name` | string | 题目名，供后续复习和统计显示 |
+| `category` | string | 题目目录/类型，如 `dp`、`two_pointers` |
+
+## 更新进度脚本
+
+优先使用简写格式：
+
+```bash
+python3 scripts/update_progress.py <题号> <状态> [完成日期]
+```
+
+脚本会按顺序补全题目名和类型：
+
+1. `leetcode.json` 中已有的进度记录
+2. 当前刷题目录下的解答文件，如 `two_pointers/42_trapping_rain_water.py`
+3. skill 自带题库 `references/problem_list.md`
+4. 找不到时使用 `LeetCode <题号>` 和 `uncategorized`
+
+旧的完整格式仍可用，适合临时记录题库外的新题：
+
+```bash
+python3 scripts/update_progress.py <题号> <题目名> <类型> <状态> [完成日期]
+```
 
 ## study_plan 字段说明
 
