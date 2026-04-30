@@ -9,4 +9,3 @@
 1. 加载 skill-creator
 2. 在 `$pwd` 执行 skill 更新
 3. 更新后提交并推送
-4. 执行 `npx skills update -g; npx skills update`
